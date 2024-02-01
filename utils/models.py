@@ -13,6 +13,7 @@ class User(Base):
     email = Column(String(50), unique=True, nullable=False)
     password = Column(String(50), nullable=False)
     membership_date = Column(Date, nullable=False)
+    borrowed_books = relationship('BorrowedBook', back_populates='user')
 
 class Book(Base):
     __tablename__ = 'books'
@@ -22,24 +23,24 @@ class Book(Base):
     isbn = Column(String(20), unique=True, nullable=False)
     published_date = Column(Date, nullable=False)
     genre = Column(String(50), nullable=False)
-    details = relationship('BookDetails', back_populates='book')
+    details = relationship('BookDetail', back_populates='book', uselist=False)
 
-class BookDetails(Base):
+class BookDetail(Base):
     __tablename__ = 'book_details'
 
     id = Column(Integer, primary_key=True, index=True)
-    book_id = Column(Integer, ForeignKey('books.BookID'), unique=True, nullable=False)
-    number_pages = Column(Integer, nullable=False)
-    publisher = Column(String(50), nullable=False)
-    language = Column(String(20), nullable=False)
+    book_id = Column(Integer, ForeignKey('books.id'), unique=True, nullable=False)
+    number_pages = Column(Integer,nullable=True)
+    publisher = Column(String(50), nullable=True)
+    language = Column(String(20),nullable=True)
     book = relationship('Book', back_populates='details')
 
-class BorrowedBooks(Base):
+class BorrowedBook(Base):
     __tablename__ = 'borrowed_books'
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.UserID'), nullable=False)
-    book_id = Column(Integer, ForeignKey('books.BookID'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    book_id = Column(Integer, ForeignKey('books.id'), nullable=False)
     borrow_date = Column(Date, nullable=False)
     return_date = Column(Date, nullable=True)
     user = relationship('User', back_populates='borrowed_books')
